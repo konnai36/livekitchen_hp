@@ -1,0 +1,21 @@
+# Secrets (keep configuration examples)
+.env
+.env.*
+*.env
+!.env.example
+!*.env.example
+*.pem
+*.key
+
+# Runtime data
+node_modules/
+inquiries/
+receipt-numbers/
+*.log
+*.pid
+
+# Local and delivery artifacts
+.DS_Store
+Thumbs.db
+*.zip
+*.bundle
