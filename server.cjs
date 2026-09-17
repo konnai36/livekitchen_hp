@@ -48,7 +48,11 @@ async function start(){
    const versionPath=url.match(/^\/(v\d+(?:-\d+)+)(?:\/(.*))?$/);
    if(versionPath){
     const [,version,resource]=versionPath;
-    if(!deliveries.some(entry=>entry.snapshotUrl===`/${version}/`)){res.writeHead(404);return res.end('Not found');}
+    if(!deliveries.some(entry=>entry.snapshotUrl===`/${version}/`)){
+     const merged=deliveries.find(entry=>entry.snapshotUrl&&(entry.mergedVersions||[]).includes(version.slice(1).replaceAll('-','.')));
+     if(merged){res.writeHead(307,{'Location':merged.snapshotUrl+(resource||'')+new URL(req.url,'http://localhost').search,'Cache-Control':'no-store'});return res.end();}
+     res.writeHead(404);return res.end('Not found');
+    }
     if(resource===undefined){res.writeHead(308,{'Location':`/${version}/`});return res.end();}
     const relative=resource||'index.html';
     if(!/^(?:index\.html|style\.css|script\.js|assets\/[a-zA-Z0-9_-]+\.(?:jpg|png|webp|svg|css))$/.test(relative)){res.writeHead(404);return res.end('Not found');}

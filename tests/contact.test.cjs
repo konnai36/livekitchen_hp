@@ -24,6 +24,13 @@ test('isolated backend: persistence, CSRF, spam, replay, errors and private file
   const snapshotCSS=await fetch(base+'/v0-2/style.css');assert.equal(snapshotCSS.status,200);
   assert.equal(await snapshotCSS.text(),await fs.readFile(path.resolve(__dirname,'../snapshots/v0-2/style.css'),'utf8'));
   assert.equal((await fetch(base+'/v0-2/assets/chef-masashi.jpg')).status,200);
+  const deliveries=require('../delivery-history.json');
+  for(const entry of deliveries)for(const mergedVersion of entry.mergedVersions||[]){
+   const alias=`/v${mergedVersion.replaceAll('.','-')}/`;
+   if(deliveries.some(item=>item.snapshotUrl===alias))continue;
+   const redirect=await fetch(base+alias,{redirect:'manual'});assert.equal(redirect.status,307);assert.equal(redirect.headers.get('location'),entry.snapshotUrl);assert.equal(redirect.headers.get('cache-control'),'no-store');
+   const assetRedirect=await fetch(base+alias+'style.css?v=old',{redirect:'manual'});assert.equal(assetRedirect.headers.get('location'),entry.snapshotUrl+'style.css?v=old');
+  }
   const head=await fetch(base+'/v0-2/',{method:'HEAD'});assert.equal(head.status,200);assert.equal(await head.text(),'');
   for(const resource of ['/v0-1/','/v9-9/','/v0-2/server.cjs','/snapshots/v0-2/index.html','/delivery-history.json','/.git/config','/v0-2/%2e%2e%2fserver.cjs'])assert.equal((await fetch(base+resource)).status,404);
   assert.equal((await fetch(base+'/style.css?v=16')).status,200);
