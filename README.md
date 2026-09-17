@@ -99,3 +99,29 @@ sudo -u www-data node /srv/italian-school/inbox.cjs reviewed 受付番号
 番号予約は非公開の `/var/lib/italian-school/receipt-numbers/` に永続保存。内部IDと再送防止の仕組みは維持し、再送時は元の番号を返します。フォームの完了表示・通知メールの件名/本文・管理一覧を新番号に統一。過去の旧形式番号はそのまま有効です。番号予約ファイルを消すと過去番号の再利用につながるため、問い合わせ本文とは別に保持してください。
 
 追加検証: 100件の同時受付、JST日付境界、再起動・日付をまたぐ再送、保存失敗からの回復、既存旧形式データとの互換性。
+
+## バージョン管理・納品
+
+このディレクトリはGitで管理しています。導入時点のサイトを最初のコミットに保存し、以降の変更は別コミットで記録します。導入前の履歴はありません。認証情報と問い合わせデータは含めません。
+
+変更確認と記録:
+
+```sh
+git status --short
+git diff
+git add index.html style.css script.js
+git commit -m "変更内容を記載"
+git log --oneline
+```
+
+納品内容を確認してコミットした後、納品ごとに一意のタグ（初回は `v1.0.0`、修正時は `v1.0.1` など）を付けます。以下は初回納品時の実行例です。現時点では納品タグは未作成です。
+
+```sh
+git tag -a v1.0.0 -m "初回納品"
+git archive --format=zip --output=/tmp/livekitchen-v1.0.0.zip v1.0.0
+git bundle create /tmp/livekitchen-history.bundle --all
+```
+
+ZIPはその版のファイル一式、bundleはGitの変更履歴を含む引き継ぎ用ファイルです。納品時には両方を渡し、タグ名とコミットID（`git rev-parse v1.0.0^{commit}`）を記録します。環境変数や外部の問い合わせ保存領域、案件管理システムは別途引き継ぎが必要です。
+
+過去の変更を戻す場合は `git log --oneline` で対象を確認し、`git revert <コミットID>` で取り消しも履歴に残します。リモートリポジトリは未設定です。
