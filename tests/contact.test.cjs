@@ -13,6 +13,19 @@ test('isolated backend: persistence, CSRF, spam, replay, errors and private file
   async function token(){const r=await fetch(base+'/api/contact-token');return {cookie:r.headers.get('set-cookie').split(';')[0],token:(await r.json()).token};}
   async function post(t,data={},headers={}){return fetch(base+'/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json',Origin:'http://localhost:8234',Cookie:t.cookie,'CF-Connecting-IP':`192.0.2.${++counter}`,...headers},body:JSON.stringify({...valid,...data,token:t.token})});}
   let home=await fetch(base+'/',{redirect:'manual'});assert.equal(home.status,200);
+  const latestDelivery=[...require('../delivery-history.json')].sort((a,b)=>Date.parse(b.deliveredAt)-Date.parse(a.deliveredAt))[0];
+  assert.ok((await home.text()).includes(`<strong>ver.${latestDelivery.version}</strong>`));
+  const history=await fetch(base+'/list/');assert.equal(history.status,200);
+  const historyHTML=await history.text();assert.ok(historyHTML.includes('2026/9/16 07:25'));assert.ok(historyHTML.includes('href="/v0-2/"'));
+  assert.equal((await fetch(base+'/list',{redirect:'manual'})).status,308);
+  const snapshot=await fetch(base+'/v0-2/');assert.equal(snapshot.status,200);
+  assert.equal(await snapshot.text(),await fs.readFile(path.resolve(__dirname,'../snapshots/v0-2/index.html'),'utf8'));
+  assert.equal((await fetch(base+'/v0-2',{redirect:'manual'})).status,308);
+  const snapshotCSS=await fetch(base+'/v0-2/style.css');assert.equal(snapshotCSS.status,200);
+  assert.equal(await snapshotCSS.text(),await fs.readFile(path.resolve(__dirname,'../snapshots/v0-2/style.css'),'utf8'));
+  assert.equal((await fetch(base+'/v0-2/assets/chef-masashi.jpg')).status,200);
+  const head=await fetch(base+'/v0-2/',{method:'HEAD'});assert.equal(head.status,200);assert.equal(await head.text(),'');
+  for(const resource of ['/v0-1/','/v9-9/','/v0-2/server.cjs','/snapshots/v0-2/index.html','/delivery-history.json','/.git/config','/v0-2/%2e%2e%2fserver.cjs'])assert.equal((await fetch(base+resource)).status,404);
   assert.equal((await fetch(base+'/style.css?v=16')).status,200);
   assert.equal((await fetch(base+'/assets/masashi-dish-01.jpg')).status,200);
   const t=await token();await new Promise(r=>setTimeout(r,1100));
