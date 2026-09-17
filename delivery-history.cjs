@@ -31,9 +31,9 @@ function renderDeliveryHistory(entries = records) {
     </article>`;
   }).join('');
   return `<!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>制作・納品のご連絡｜Okayu-llc</title><link rel="icon" href="/assets/favicon.png" type="image/png"><link rel="stylesheet" href="/assets/delivery-history.css?v=0-3"></head>
-<body><main><a class="home-link" href="/">← 最新のホームページ</a><p class="eyebrow">Okayu-llc / Livekitchen</p><h1>制作・納品のご連絡</h1><p class="intro">Okayu-llcから、制作・更新内容と納品状況をお知らせするページです。各バージョンの納品日時・変更箇所・コメントをご確認いただけます。日時は日本時間です。</p>${cards || '<p>納品履歴はまだありません。</p>'}
-<footer class="contact-card" aria-labelledby="contact-card-heading"><p class="contact-label">制作・更新についてのご連絡先</p><h2 id="contact-card-heading">Okayu-llc</h2><address><dl><div><dt>担当</dt><dd>近内</dd></div><div><dt>メール</dt><dd><a href="mailto:konnai.masaki@gmail.com">konnai.masaki@gmail.com</a></dd></div><div><dt>電話</dt><dd><a href="tel:08072962929">080-7296-2929</a></dd></div></dl></address></footer>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>制作・納品のご連絡｜合同会社おかゆ</title><link rel="icon" href="/assets/favicon.png" type="image/png"><link rel="stylesheet" href="/assets/delivery-history.css?v=0-3"></head>
+<body><main><a class="home-link" href="/">← 最新のホームページ</a><p class="eyebrow">合同会社おかゆ / Livekitchen</p><h1>制作・納品のご連絡</h1><p class="intro">合同会社おかゆから、制作・更新内容と納品状況をお知らせするページです。各バージョンの納品日時・変更箇所・コメントをご確認いただけます。日時は日本時間です。</p>${cards || '<p>納品履歴はまだありません。</p>'}
+<footer class="contact-card" aria-labelledby="contact-card-heading"><p class="contact-label">制作・更新についてのご連絡先</p><h2 id="contact-card-heading">合同会社おかゆ</h2><address><dl><div><dt>担当</dt><dd>近内</dd></div><div><dt>メール</dt><dd><a href="mailto:konnai.masaki@gmail.com">konnai.masaki@gmail.com</a></dd></div><div><dt>電話</dt><dd><a href="tel:08072962929">080-7296-2929</a></dd></div></dl></address></footer>
 </main></body></html>`;
 }
 

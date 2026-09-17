@@ -1,0 +1,30 @@
+:root{color-scheme:dark;--paper:#242622;--ink:#f5f1e8;--accent:#e0c681;--line:#55584f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;line-height:1.85}
+main{max-width:920px;margin:auto;padding:48px 24px 72px}
+a{color:var(--accent);text-underline-offset:4px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:5px}
+.eyebrow{margin:40px 0 8px;color:var(--accent);letter-spacing:.12em}
+h1{font-size:clamp(26px,5vw,36px);margin:0 0 12px}
+.intro{margin:0 0 32px;color:#ded7ca}
+.release{padding:28px;border:1px solid var(--line);background:#1d1f1c;margin:24px 0}
+.release-heading{display:flex;align-items:baseline;gap:12px 24px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:16px}
+h2{margin:0;font-size:26px;color:var(--accent)}
+.release-heading p{margin:0}
+h3{font-size:16px;margin:24px 0 10px}
+ol{margin:0;padding-left:1.8em}
+li{padding-left:4px;margin:8px 0;overflow-wrap:anywhere}
+.comment{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.snapshot-note,.snapshot-link{display:block;margin:24px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.snapshot-note{color:#ded7ca}
+.contact-card{margin-top:48px;padding:28px;border:1px solid var(--line);border-top:3px solid var(--accent);background:#202a24}
+.contact-label{margin:0 0 8px;font-size:13px;color:#ded7ca}
+.contact-card h2{font-size:24px}
+.contact-card address{margin-top:16px;font-style:normal}
+.contact-card dl{margin:0}
+.contact-card dl>div{display:grid;grid-template-columns:80px minmax(0,1fr);align-items:baseline;gap:12px;margin-top:8px}
+.contact-card dt{font-size:13px;color:#ded7ca}
+.contact-card dd{margin:0;overflow-wrap:anywhere}
+.contact-card a{display:inline-flex;align-items:center;min-height:44px;max-width:100%;overflow-wrap:anywhere}
+@media(max-width:600px){main{padding:28px 16px 48px}.release{padding:20px 16px}.release-heading{gap:4px 16px}.release-heading p{font-size:14px}}
+@media(max-width:600px){.contact-card{padding:22px 16px}.contact-card dl>div{grid-template-columns:1fr;gap:0}.contact-card dd{font-size:15px}.contact-card a{display:block;padding:8px 0}}
