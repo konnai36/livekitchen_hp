@@ -17,6 +17,14 @@ test('isolated backend: persistence, CSRF, spam, replay, errors and private file
   assert.ok((await home.text()).includes(`<strong>ver.${latestDelivery.version}</strong>`));
   const history=await fetch(base+'/list/');assert.equal(history.status,200);
   const historyHTML=await history.text();assert.ok(historyHTML.includes('2026/9/16 07:25'));assert.ok(historyHTML.includes('href="/v0-2/"'));
+  assert.ok(historyHTML.includes('href="/pricing-owner-meeting/"'));
+  const meeting=await fetch(base+'/pricing-owner-meeting/');assert.equal(meeting.status,200);
+  const meetingHTML=await meeting.text();assert.ok(meetingHTML.includes('吉本シェフ打合せ用'));assert.ok(meetingHTML.includes('/assets/owner-meeting.css'));
+  assert.equal(meeting.headers.get('x-robots-tag'),'noindex, nofollow');
+  assert.equal((await fetch(base+'/assets/owner-meeting.css')).status,200);
+  assert.equal((await fetch(base+'/pricing-owner-meeting',{redirect:'manual'})).status,308);
+  const current=await fetch(base+'/');const currentHTML=await current.text();
+  for(const phrase of ['13,000円','20,000円','25,000〜30,000円','ワインペアリング','朝食作り置き','愛犬用ディナー'])assert.ok(currentHTML.includes(phrase));
   assert.equal((await fetch(base+'/list',{redirect:'manual'})).status,308);
   const snapshot=await fetch(base+'/v0-2/');assert.equal(snapshot.status,200);
   assert.equal(await snapshot.text(),await fs.readFile(path.resolve(__dirname,'../snapshots/v0-2/index.html'),'utf8'));
@@ -24,6 +32,12 @@ test('isolated backend: persistence, CSRF, spam, replay, errors and private file
   const snapshotCSS=await fetch(base+'/v0-2/style.css');assert.equal(snapshotCSS.status,200);
   assert.equal(await snapshotCSS.text(),await fs.readFile(path.resolve(__dirname,'../snapshots/v0-2/style.css'),'utf8'));
   assert.equal((await fetch(base+'/v0-2/assets/chef-masashi.jpg')).status,200);
+  const versionThree=await fetch(base+'/v0-3/');assert.equal(versionThree.status,200);
+  assert.ok((await versionThree.text()).includes('25,000〜30,000円'));
+  const proposalVersion=await fetch(base+'/proposals/1/v3/');assert.equal(proposalVersion.status,200);
+  assert.equal(await proposalVersion.text(),await fs.readFile(path.resolve(__dirname,'../snapshots/v0-3/index.html'),'utf8'));
+  assert.equal((await fetch(base+'/proposals/1/v3/style.css')).status,200);
+  assert.equal((await fetch(base+'/proposals/1/v3/assets/plated-green-thumb.webp')).status,200);
   const deliveries=require('../delivery-history.json');
   for(const entry of deliveries)for(const mergedVersion of entry.mergedVersions||[]){
    const alias=`/v${mergedVersion.replaceAll('.','-')}/`;

@@ -19,11 +19,11 @@ Node.js標準ライブラリ + HTML/CSS/JavaScript。新しいnpm依存はあり
 
 ## 編集箇所
 
-`site.config.cjs` に電話、メールアドレス、料金、FAQ、実際のご依頼例を集約。
+`site.config.cjs` に電話、メールアドレス、FAQ、実際のご依頼例を集約。現在の3コース・オプション・料金表示は `index.html` の `#pricing` にあります。
 
 - `phone`: **未定・空欄**。正式な番号を設定するとトップ、問い合わせ欄、スマホ固定欄が `tel:` リンクになります。未設定時は「番号掲載準備中・フォームをご利用ください」と表示。
 - `contactEmail`: **livekitchen.co@gmail.com**。直接メールリンク、管理者向けフォーム通知、お客様向け自動返信の返信先。後から `site.config.cjs` で変更可能。
-- `prices`: 確定済みの料金。カジュアル／プレミアム等の区分を追加する場合もここにカードを追加。
+- `prices`: 旧料金カード描画用の互換設定。現在のホームページの料金表示には使われません。
 - `faq`: 最少人数、地域、会場設備、書類、キャンセル等の正確な条件が決まったら更新。
 - `examples`: 現在空配列。実データを追加すると「実際のご依頼例」カードを自動表示。`title / people / scope / total / note`。ダミー料金は表示しない。
 
@@ -151,3 +151,15 @@ ver.0.2は2026/9/17の作業記録と現行ファイルを照合した26項目�
 `/list/` は合同会社おかゆからの制作・納品の連絡ページです。最下部に担当 近内の連絡先カードを掲載し、メール・電話のリンクから連絡できます。旧ver.0.3・ver.0.4の変更をver.0.2へ統合しました。次回の新規変更はver.0.3です。
 
 統合前の版は `archive/v0.3`、`archive/v0.4`、`v0.2-before-consolidation` のGitタグで保存しています。`v0.2` は統合後の納品版を指します。旧URLの `/v0-3/` と `/v0-4/` は、新しい同番号の納品版が登録されるまで `/v0-2/` へ一時転送します。
+
+### ver.0.3 料金案の掲載（2026/9/22）
+
+公開向け料金案 `livekitchen_pricing_public_luxury.html` をもとに、ホームページの料金欄に3コース・オプション・個別相談を組み込みました。シェフ打合せ用資料 `livekitchen_pricing_owner_meeting.html` は `/list/` から `/pricing-owner-meeting/` で閲覧できます。資料には未確定の提案が含まれるため、検索エンジンには登録しない設定です。URLを知っている人は閲覧できます。
+
+この依頼でver.0.3を発行しました。以降の通常の変更は版を上げず、ユーザーが「小バージョン上げて」「大バージョン上げて」と明示した場合にのみ、蓄積した変更をまとめて新しい固定版とGitタグを作成します。
+
+### 提案一覧と素材アップロード（ver.0.3）
+
+川上サイトと同じ運用として、`/proposals/` に提案一覧を追加しました。従来の `/list/` も同じ内容です。固定版は `/proposals/1/v3/` と `/v0-3/` で参照できます。将来のver.0.xも同様に `/proposals/1/vx/` を発行します。
+
+`/list/` または `/proposals/` のフォームでMP4・JPEG・PNG・GIF・WebP・AVIF・ZIPをアップロードできます。1ファイル30MBまで。アップロードキーは `/etc/livekitchen-upload.env` の `LIVEKITCHEN_UPLOAD_TOKEN` に保存し、Gitには含めません。確認はサーバー上で `sudo cat /etc/livekitchen-upload.env`。変更した場合は `sudo systemctl restart italian-school.service` で反映します。アップロード先は非公開の `/var/lib/italian-school/uploads/` で、サイトにはファイルのURLと一覧のみ公開されます。アップロードされた素材は運営者が確認してからサイトへ採用します。
