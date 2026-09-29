@@ -6,6 +6,18 @@ const deliveries=require('./delivery-history.json');
 const {createContact}=require('./contact.cjs');
 const root=__dirname;
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function proxyPreview(req,res,url){
+ if(!(url==='/preview'||url.startsWith('/preview/')))return false;
+ const headers={...req.headers,host:req.headers.host,'x-forwarded-proto':'https','x-forwarded-host':req.headers.host,'x-forwarded-prefix':'/preview'};
+ delete headers.connection;
+ const upstream=http.request({hostname:'127.0.0.1',port:8236,path:req.url,method:req.method,headers},upstreamRes=>{
+  res.writeHead(upstreamRes.statusCode,{...upstreamRes.headers,'x-robots-tag':'noindex, nofollow'});
+  upstreamRes.pipe(res);
+ });
+ upstream.on('error',()=>{if(!res.headersSent)res.writeHead(502);res.end('Preview is unavailable');});
+ req.pipe(upstream);
+ return true;
+}
 function proxyCaseManagement(req,res,url){
  if(!(url==='/cm'||url.startsWith('/cm/')))return false;
  const targetPath=url==='/cm'?'/':url.slice(3)||'/';
@@ -39,6 +51,7 @@ async function start(){
   res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');res.setHeader('Content-Security-Policy',"default-src 'self'; img-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
   try{
    let url;try{url=decodeURIComponent(new URL(req.url,'http://localhost').pathname);}catch{res.writeHead(400);return res.end();}
+   if(proxyPreview(req,res,url))return;
    if(proxyCaseManagement(req,res,url))return;
    if(await handleUpload(req,res,url)!==false)return;
    if(await contact(req,res,url))return;
