@@ -24,7 +24,12 @@ test('isolated backend: persistence, CSRF, spam, replay, errors and private file
   assert.equal((await fetch(base+'/assets/owner-meeting.css')).status,200);
   assert.equal((await fetch(base+'/pricing-owner-meeting',{redirect:'manual'})).status,308);
   const current=await fetch(base+'/');const currentHTML=await current.text();
-  for(const phrase of ['13,000円','20,000円','25,000〜30,000円','ワインペアリング','朝食作り置き','愛犬用ディナー'])assert.ok(currentHTML.includes(phrase));
+  for(const phrase of ['13,000円','20,000円','25,000円〜','SELECTED DISHES','CHEF MASASHI','href="/pricing/"'])assert.ok(currentHTML.includes(phrase));
+  const pricing=await fetch(base+'/pricing/');assert.equal(pricing.status,200);const pricingHTML=await pricing.text();
+  for(const phrase of ['13,000円','20,000円','25,000円〜','ワインペアリング','朝食作り置き','愛犬用ディナー'])assert.ok(pricingHTML.includes(phrase));
+  assert.equal((await fetch(base+'/pricing',{redirect:'manual'})).status,308);
+  assert.match(await (await fetch(base+'/robots.txt')).text(),/Sitemap: https:\/\/livekitchen\.tokyo\/sitemap\.xml/);
+  assert.match(await (await fetch(base+'/sitemap.xml')).text(),/<loc>https:\/\/livekitchen\.tokyo\/pricing\/<\/loc>/);
   assert.equal((await fetch(base+'/list',{redirect:'manual'})).status,308);
   const snapshot=await fetch(base+'/v0-2/');assert.equal(snapshot.status,200);
   assert.equal(await snapshot.text(),await fs.readFile(path.resolve(__dirname,'../snapshots/v0-2/index.html'),'utf8'));
