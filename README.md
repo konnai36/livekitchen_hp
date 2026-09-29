@@ -1,7 +1,9 @@
 # Livekitchen — 出張シェフ・ケータリング
 
-公開サイト: https://kitchen.okayu-llc.jp/
-案件管理: https://kitchen.okayu-llc.jp/cm/
+公開サイト: https://livekitchen.tokyo/
+リファクタリング確認: https://livekitchen.tokyo/preview/
+一般向け料金ページ（プレビュー）: https://livekitchen.tokyo/preview/pricing/
+案件管理: https://livekitchen.tokyo/cm/
 ローカル確認: http://10.100.10.10:8234
 
 Node.js標準ライブラリ + HTML/CSS/JavaScript。新しいnpm依存はありません。
@@ -19,7 +21,13 @@ Node.js標準ライブラリ + HTML/CSS/JavaScript。新しいnpm依存はあり
 
 ## 編集箇所
 
-`site.config.cjs` に電話、メールアドレス、FAQ、実際のご依頼例を集約。現在の3コース・オプション・料金表示は `index.html` の `#pricing` にあります。
+`site.config.cjs` に電話、メールアドレス、FAQ、実際のご依頼例を集約。3コース・オプション・料金表示は `pricing-data.cjs` に集約し、TOPと `/pricing/` が同じデータを使用します。
+
+## リファクタリング版のプレビュー
+
+`refactor/livekitchen` ブランチは `/srv/livekitchen_hp_refactor` の別ワークツリーで管理します。`livekitchen-preview.service` が `127.0.0.1:8236` で起動し、公開サーバーが `/preview/` のみを中継します。プレビューの問い合わせは `/var/lib/livekitchen-preview/` に保存され、公開サイトの問い合わせとは分離されています。
+
+プレビューにはHTMLのrobots指定とHTTPの `X-Robots-Tag: noindex, nofollow` の両方を付けています。公開 `/` は承認後のデプロイまで従来版を維持します。
 
 - `phone`: 正式な番号を設定するとトップ、問い合わせ欄、スマホ固定欄が `tel:` リンクになります。番号そのものは画面に表示せず「電話をかける」と案内します。未設定時は「番号掲載準備中・フォームをご利用ください」と表示。
 - `contactEmail`: **livekitchen.co@gmail.com**。直接メールリンク、管理者向けフォーム通知、お客様向け自動返信の返信先。後から `site.config.cjs` で変更可能。

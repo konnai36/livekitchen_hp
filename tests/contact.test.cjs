@@ -13,8 +13,9 @@ test('isolated backend: persistence, CSRF, spam, replay, errors and private file
   async function token(){const r=await fetch(base+'/api/contact-token');return {cookie:r.headers.get('set-cookie').split(';')[0],token:(await r.json()).token};}
   async function post(t,data={},headers={}){return fetch(base+'/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json',Origin:'http://localhost:8234',Cookie:t.cookie,'CF-Connecting-IP':`192.0.2.${++counter}`,...headers},body:JSON.stringify({...valid,...data,token:t.token})});}
   let home=await fetch(base+'/',{redirect:'manual'});assert.equal(home.status,200);
-  const latestDelivery=[...require('../delivery-history.json')].sort((a,b)=>Date.parse(b.deliveredAt)-Date.parse(a.deliveredAt))[0];
-  assert.ok((await home.text()).includes(`<strong>ver.${latestDelivery.version}</strong>`));
+  const homeHTML=await home.text();
+  assert.ok(!homeHTML.includes('class="delivery-note"'));
+  assert.ok(!homeHTML.includes('全バージョン・変更履歴を見る'));
   const history=await fetch(base+'/list/');assert.equal(history.status,200);
   const historyHTML=await history.text();assert.ok(historyHTML.includes('2026/9/16 07:25'));assert.ok(historyHTML.includes('href="/v0-2/"'));
   assert.ok(historyHTML.includes('href="/pricing-owner-meeting/"'));
@@ -24,7 +25,12 @@ test('isolated backend: persistence, CSRF, spam, replay, errors and private file
   assert.equal((await fetch(base+'/assets/owner-meeting.css')).status,200);
   assert.equal((await fetch(base+'/pricing-owner-meeting',{redirect:'manual'})).status,308);
   const current=await fetch(base+'/');const currentHTML=await current.text();
-  for(const phrase of ['13,000円','20,000円','25,000〜30,000円','ワインペアリング','朝食作り置き','愛犬用ディナー'])assert.ok(currentHTML.includes(phrase));
+  for(const phrase of ['13,000円','20,000円','25,000円〜','SELECTED DISHES','CHEF MASASHI','href="/pricing/"'])assert.ok(currentHTML.includes(phrase));
+  const pricing=await fetch(base+'/pricing/');assert.equal(pricing.status,200);const pricingHTML=await pricing.text();
+  for(const phrase of ['13,000円','20,000円','25,000円〜','ワインペアリング','朝食作り置き','愛犬用ディナー'])assert.ok(pricingHTML.includes(phrase));
+  assert.equal((await fetch(base+'/pricing',{redirect:'manual'})).status,308);
+  assert.match(await (await fetch(base+'/robots.txt')).text(),/Sitemap: https:\/\/livekitchen\.tokyo\/sitemap\.xml/);
+  assert.match(await (await fetch(base+'/sitemap.xml')).text(),/<loc>https:\/\/livekitchen\.tokyo\/pricing\/<\/loc>/);
   assert.equal((await fetch(base+'/list',{redirect:'manual'})).status,308);
   const snapshot=await fetch(base+'/v0-2/');assert.equal(snapshot.status,200);
   assert.equal(await snapshot.text(),await fs.readFile(path.resolve(__dirname,'../snapshots/v0-2/index.html'),'utf8'));
