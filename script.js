@@ -1,7 +1,8 @@
 const menu = document.querySelector('.menu');
 const nav = document.querySelector('nav');
 const favicon = document.querySelector('link[rel="icon"]');
-if (favicon) favicon.href = 'assets/favicon-m.svg';
+const siteBase = document.querySelector('meta[name="site-base"]')?.content || '';
+if (favicon) favicon.href = `${siteBase}/assets/favicon-m.svg`;
 const socialLinks = '<a class="social-link social-link-instagram" href="https://www.instagram.com/marcy.cooking/" target="_blank" rel="noopener noreferrer" aria-label="Instagramを開く"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.03.084c-1.277.06-2.149.264-2.911.563-.789.308-1.458.72-2.123 1.388-.665.668-1.075 1.337-1.38 2.127-.296.764-.496 1.637-.552 2.914-.056 1.278-.069 1.688-.063 4.947.007 3.259.021 3.667.083 4.947.061 1.277.264 2.148.564 2.911.308.789.72 1.457 1.388 2.123.668.665 1.337 1.074 2.129 1.38.763.295 1.636.496 2.913.552 1.277.056 1.688.069 4.946.063 3.258-.007 3.668-.021 4.948-.082 1.28-.061 2.147-.265 2.91-.563.789-.309 1.458-.72 2.123-1.388.665-.668 1.075-1.338 1.38-2.129.296-.763.497-1.636.552-2.912.056-1.281.069-1.69.063-4.948-.006-3.258-.021-3.667-.082-4.946-.061-1.28-.264-2.149-.563-2.912-.308-.789-.72-1.457-1.388-2.123-.668-.665-1.338-1.074-2.128-1.38-.764-.296-1.636-.496-2.913-.552C15.647.009 15.236-.005 11.977.001 8.718.008 8.31.022 7.03.084m.14 21.693c-1.17-.051-1.805-.245-2.229-.408-.56-.216-.96-.477-1.382-.895-.422-.418-.681-.819-.9-1.378-.164-.424-.362-1.058-.417-2.228-.059-1.265-.072-1.644-.079-4.848-.007-3.204.005-3.583.061-4.848.05-1.169.246-1.805.408-2.228.216-.561.476-.96.895-1.382.419-.422.818-.681 1.378-.9.423-.165 1.058-.362 2.227-.417 1.266-.06 1.645-.072 4.848-.079 3.203-.007 3.584.005 4.85.061 1.169.051 1.805.244 2.228.408.561.216.96.475 1.382.895.422.419.682.818.9 1.379.165.422.362 1.056.417 2.226.06 1.266.074 1.645.08 4.848.005 3.203-.006 3.583-.061 4.848-.051 1.17-.245 1.806-.408 2.229-.216.56-.476.96-.896 1.381-.419.422-.818.681-1.378.9-.422.165-1.058.362-2.226.418-1.266.059-1.645.072-4.85.079-3.204.007-3.582-.006-4.848-.061M16.953 5.586a1.44 1.44 0 1 0 1.437-1.442 1.44 1.44 0 0 0-1.437 1.442M5.839 12.012c.006 3.403 2.77 6.156 6.173 6.149 3.403-.006 6.157-2.77 6.151-6.173-.007-3.403-2.771-6.156-6.174-6.15-3.403.007-6.156 2.772-6.15 6.174M8 12.008a4 4 0 1 1 4.008 3.992A4 4 0 0 1 8 12.008"/></svg><span>Instagram</span></a><a class="social-link social-link-x" href="https://x.com/livekitchen_co6" target="_blank" rel="noopener noreferrer" aria-label="Xを開く"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg><span>X</span></a>';
 document.querySelectorAll('.social-links, .contact-social, .footer-links').forEach(element => {
   if (element.innerHTML.includes('{{SOCIAL_LINKS}}')) {
@@ -119,7 +120,7 @@ if (inquiryForm) {
   });
   let tokenPromise;
   const getToken = () => {
-    if (!tokenPromise) tokenPromise = fetch('/api/contact-token', {credentials:'same-origin',cache:'no-store'})
+    if (!tokenPromise) tokenPromise = fetch(`${siteBase}/api/contact-token`, {credentials:'same-origin',cache:'no-store'})
       .then(async response => {const body=await response.json();if(!response.ok)throw new Error(body.message);return new Promise(resolve=>setTimeout(()=>resolve(body.token),1100));})
       .catch(error => {tokenPromise=null;throw error;});
     return tokenPromise;
@@ -140,7 +141,7 @@ if (inquiryForm) {
       const controller=new AbortController();
       const timeout=setTimeout(()=>controller.abort(),20000);
       let response;
-      try {response=await fetch('/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({...data,token}),signal:controller.signal});}finally{clearTimeout(timeout);}
+      try {response=await fetch(`${siteBase}/api/inquiries`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({...data,token}),signal:controller.signal});}finally{clearTimeout(timeout);}
       const body=await response.json();
       if(!response.ok){if(body.refreshToken)tokenPromise=null;throw new Error(body.message||'送信できませんでした。時間をおいて再度お試しください。');}
       const rememberedValues={};

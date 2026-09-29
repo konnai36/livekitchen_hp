@@ -23,7 +23,7 @@ function validate(input) {
   return {data};
 }
 
-async function createContact({directory, origin}) {
+async function createContact({directory, origin, origins=[]}) {
   await fs.mkdir(directory, {recursive:true,mode:0o700});
   const inbox = path.join(directory,'inquiries');
   await fs.mkdir(inbox,{recursive:true,mode:0o700});
@@ -34,7 +34,7 @@ async function createContact({directory, origin}) {
   const sign = text => crypto.createHmac('sha256',secret).update(text).digest('base64url');
   const equal = (a,b) => typeof a==='string' && typeof b==='string' && a.length===b.length && crypto.timingSafeEqual(Buffer.from(a),Buffer.from(b));
   const buckets = new Map();
-  const allowedOrigins = new Set([origin,'http://localhost:8234','http://127.0.0.1:8234','http://10.100.10.10:8234']);
+  const allowedOrigins = new Set([origin,...origins,'http://localhost:8234','http://127.0.0.1:8234','http://10.100.10.10:8234']);
   function allow(req, kind, max) {
     let ip = req.socket.remoteAddress || '';
     // Only the local reverse proxy can supply the Cloudflare client address.
@@ -53,8 +53,9 @@ async function createContact({directory, origin}) {
       if(!allow(req,'token',40)) {reply(res,429,'しばらく時間をおいて再度お試しください。');return true;}
       const sid=session(req)||crypto.randomBytes(32).toString('hex');
       const payload=Buffer.from(JSON.stringify({session:sid,nonce:crypto.randomBytes(16).toString('hex'),time:Date.now()})).toString('base64url');
-      const secure=req.headers.host===new URL(origin).host ? '; Secure' : '';
-      res.setHeader('Set-Cookie',`lk_session=${sid}; HttpOnly; SameSite=Strict; Path=/api; Max-Age=7200${secure}`);
+      const secure=(req.headers['x-forwarded-proto']==='https'||allowedOrigins.has('https://'+req.headers.host)) ? '; Secure' : '';
+      const cookiePath=(req.siteBase||'')+'/api';
+      res.setHeader('Set-Cookie',`lk_session=${sid}; HttpOnly; SameSite=Strict; Path=${cookiePath}; Max-Age=7200${secure}`);
       reply(res,200,'',{token:payload+'.'+sign(payload)});return true;
     }
     if(req.method!=='POST') {reply(res,405,'この操作には対応していません。');return true;}

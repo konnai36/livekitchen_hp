@@ -39,21 +39,21 @@ function parseMultipart(body,boundary){
  if(fields.size!==2||!fields.has('upload_file')||!fields.has('upload_token'))throw Error('missing fields');
  return fields;
 }
-async function list(){
+async function list(base=''){
  await fs.mkdir(directory,{recursive:true,mode:0o700});
  const files=[];
  for(const name of await fs.readdir(directory)){
   if(!filePattern.test(name))continue;
   const stat=await fs.stat(path.join(directory,name));if(!stat.isFile())continue;
   let metadata={};try{metadata=JSON.parse(await fs.readFile(path.join(directory,name+'.json'),'utf8'));}catch{}
-  files.push({name:metadata.name||'アップロードファイル',url:'/uploads/'+name,kind:types[path.extname(name)][1],size:stat.size,uploaded_at:stat.mtime.toISOString()});
+  files.push({name:metadata.name||'アップロードファイル',url:base+'/uploads/'+name,kind:types[path.extname(name)][1],size:stat.size,uploaded_at:stat.mtime.toISOString()});
  }
  files.sort((a,b)=>b.uploaded_at.localeCompare(a.uploaded_at));return files;
 }
 async function handleUpload(req,res,url){
  if(url==='/api/uploads'){
   if(req.method!=='GET')return json(res,405,{error:'Method not allowed'});
-  return json(res,200,{files:await list()});
+  return json(res,200,{files:await list(req.siteBase||'')});
  }
  if(url.startsWith('/uploads/')){
   if(!['GET','HEAD'].includes(req.method)){res.writeHead(405);return res.end();}
@@ -68,7 +68,8 @@ async function handleUpload(req,res,url){
  const secret=process.env.LIVEKITCHEN_UPLOAD_TOKEN;
  if(!secret)return json(res,503,{error:'アップロード設定がありません。'});
  const origin=req.headers.origin;
- if(origin&&origin!==config.origin&&origin!=='http://localhost:8234')return json(res,403,{error:'送信元を確認できません。'});
+ const allowedOrigins=new Set([config.origin,...(config.origins||[]),'http://localhost:8234','http://127.0.0.1:8234']);
+ if(origin&&!allowedOrigins.has(origin))return json(res,403,{error:'送信元を確認できません。'});
  const match=/^multipart\/form-data;\s*boundary=([A-Za-z0-9'()+_,.\/:=?-]{1,100})$/i.exec(req.headers['content-type']||'');
  if(!match)return json(res,415,{error:'フォーム形式で送信してください。'});
  const declared=Number(req.headers['content-length']);
@@ -89,6 +90,6 @@ async function handleUpload(req,res,url){
  const displayName=[...original].filter(char=>char>=' '&&char!=='\x7f').join('').slice(0,120)||'アップロードファイル'+extension;
  await fs.writeFile(path.join(directory,name),data,{flag:'wx',mode:0o600});
  await fs.writeFile(path.join(directory,name+'.json'),JSON.stringify({name:displayName})+'\n',{flag:'wx',mode:0o600});
- return json(res,201,{url:'/uploads/'+name,size:data.length,name:displayName,kind:types[extension][1]});
+ return json(res,201,{url:(req.siteBase||'')+'/uploads/'+name,size:data.length,name:displayName,kind:types[extension][1]});
 }
 module.exports={handleUpload};

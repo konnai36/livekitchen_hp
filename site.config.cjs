@@ -1,6 +1,7 @@
 // Public content. Edit here, then restart italian-school.service.
 module.exports = {
-  origin: 'https://kitchen.okayu-llc.jp',
+  origin: 'https://livekitchen.tokyo',
+  origins: ['https://livekitchen.tokyo', 'https://kitchen.okayu-llc.jp'],
   // Per-site public/notification address. Prefer CONTACT_EMAIL in the service EnvironmentFile.
   contactEmail: process.env.CONTACT_EMAIL || 'livekitchen.co@gmail.com',
   phone: '080-9811-1888',
