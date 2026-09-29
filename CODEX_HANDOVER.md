@@ -8,9 +8,9 @@
 
 - 公開中のTOP `https://livekitchen.tokyo/` は、2026/9/29に承認済みリファクタリング版へ切り替え済みです。
 - 同じデザインのレビュー環境を `https://livekitchen.tokyo/preview/` に維持しています。
-- ユーザーの明示的な承認により公開 `/` へ反映し、ver.0.4として納品済みです。
+- 2026/9/29、ユーザーの明示的な指示によりver.1.0を発行し、公開 `/` を固定ページ `/v1-0/` として保存しました。
 - 今後の通常変更では版番号を上げず、ユーザーの明示的な指示がある場合だけ次版を発行します。
-- 固定納品版 `/v0-2/`、`/v0-3/`、`/v0-4/` は変更してはいけません。
+- 固定納品版 `/v0-2/`、`/v0-3/`、`/v0-4/`、`/v1-0/` はその版の修正を明示依頼されない限り変更してはいけません。
 - 通常の修正では版番号を上げません。詳細は `AGENTS.md` を優先してください。
 - ユーザーの直近指示は「引き継ぎ文書を作ること」であり、この文書作成以外の新しいリファクタリング作業は開始しません。
 
@@ -40,7 +40,7 @@
 
 ### 納品タグ
 
-- 現在の正式な最新版タグ: `v0.4`
+- 現在の正式な最新版タグ: `v1.0`
 - 過去タグ: `v0.2`
 - 旧版保管タグ: `archive/v0.3`, `archive/v0.4`
 - その他の退避タグは `git tag --list` で確認してください。
@@ -108,7 +108,7 @@ systemctl status livekitchen-preview.service --no-pager
 
 | URL | 用途 | 状態・注意 |
 |---|---|---|
-| `https://livekitchen.tokyo/` | 公開TOP | ver.0.4 リファクタリング版 |
+| `https://livekitchen.tokyo/` | 公開TOP | ver.1.0 |
 | `https://livekitchen.tokyo/preview/` | リファクタリングTOP | noindex。確認用 |
 | `https://livekitchen.tokyo/preview/pricing/` | 一般向け料金ページのレビュー環境 | noindex。確認用 |
 | `https://livekitchen.tokyo/pricing/` | 一般向け料金ページ | 公開中 |
@@ -118,6 +118,7 @@ systemctl status livekitchen-preview.service --no-pager
 | `https://livekitchen.tokyo/v0-2/` | ver.0.2固定版 | 変更禁止 |
 | `https://livekitchen.tokyo/v0-3/` | ver.0.3固定版 | 変更禁止 |
 | `https://livekitchen.tokyo/v0-4/` | ver.0.4固定版 | 変更禁止 |
+| `https://livekitchen.tokyo/v1-0/` | ver.1.0固定版 | 変更禁止 |
 | `https://livekitchen.tokyo/cm/` | マルチテナント案件管理システム | 既存連携を壊さない |
 
 `/preview/` はHTMLのrobots指定とHTTP `X-Robots-Tag: noindex, nofollow` の両方を設定済みです。
@@ -364,7 +365,7 @@ Cookieに一部入力を保存し、次回復元します。保存内容を削�
 - ギャラリーダイアログのキーボード、Esc、左右キー、フォーカス復帰
 - フォームのlabel、legend、aria-live
 
-SEO修正はver.0.4として公開済みです。
+SEO修正はver.0.4で公開済みです。
 
 ## 11. CSS / JavaScriptの整理結果
 
@@ -425,6 +426,7 @@ node --test tests/*.test.cjs
 - 通常変更では版番号を上げません。
 - ユーザーが「小バージョン上げて」と明示した時だけ、小バージョンを上げます。
 - ユーザーが「大バージョン上げて」と明示した時だけ、X.0へ上げます。
+- 現在の最新版はver.1.0。次の小バージョンはユーザーの明示指示後にver.1.1です。
 - 納品時は前回納品以降の実際の変更だけを履歴へ記録します。
 - 相談・提案だけの内容を「実装済み」と記録しません。
 - 固定版は、その版の修正をユーザーが明示した場合だけ変更します。
@@ -501,7 +503,7 @@ node --test tests/*.test.cjs
 - canonical / OG確認
 - 問い合わせの独立テスト
 - 公開問い合わせデータにテストデータを残さない
-- ver.0.4公開直前のロールバックタグは `pre-release/v0.4`、正式納品タグは `v0.4`
+- ver.0.4公開直前のロールバックタグは `pre-release/v0.4`。正式納品タグは `v0.4` と `v1.0`
 
 ## 18. 重要な注意事項
 

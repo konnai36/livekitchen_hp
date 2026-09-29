@@ -28,11 +28,13 @@ function renderDeliveryHistory(entries = records) {
     const snapshot = /^\/v\d+(?:-\d+)+\/$/.test(entry.snapshotUrl ?? '')
       ? `<a class="snapshot-link" href="${escape(entry.snapshotUrl)}">納品版を見る →</a>`
       : '<p class="snapshot-note">納品ページ：未保存（当時のページ一式が必要です）</p>';
-    const preview = /^\/v\d+(?:-\d+)+\/$/.test(entry.snapshotUrl ?? '') ? `<a class="release-preview" href="/proposals/1/v${escape(entry.version.split('.')[1])}/" aria-label="ver.${escape(entry.version)}のページを開く"><img src="${escape(entry.snapshotUrl)}assets/plated-green-thumb.webp" alt="Livekitchenの料理写真" loading="lazy" width="720" height="542"><span>サイトを見る ↗</span></a>` : '';
+    const proposalVersion = entry.version.startsWith('0.') ? `v${entry.version.split('.')[1]}` : `v${entry.version.replaceAll('.', '-')}`;
+    const proposalUrl = `/proposals/1/${proposalVersion}/`;
+    const preview = /^\/v\d+(?:-\d+)+\/$/.test(entry.snapshotUrl ?? '') ? `<a class="release-preview" href="${proposalUrl}" aria-label="ver.${escape(entry.version)}のページを開く"><img src="${escape(entry.snapshotUrl)}assets/plated-green-thumb.webp" alt="Livekitchenの料理写真" loading="lazy" width="720" height="542"><span>サイトを見る ↗</span></a>` : '';
     return `<article class="release" id="v${escape(entry.version.replaceAll('.', '-'))}">${preview}<div class="release-content">
       <div class="release-heading"><h2>ver.${escape(entry.version)}</h2><p><time datetime="${escape(entry.deliveredAt)}">${escape(date)}</time> 納品</p></div>
       <h3>変更箇所</h3><ol>${entry.changes.map(change => `<li>${publicText(change)}</li>`).join('')}</ol>
-      <h3>コメント</h3><p class="comment">${publicText(entry.comment || '未登録')}</p>${snapshot}${entry.version.startsWith('0.') && entry.snapshotUrl ? `<a class="proposal-link" href="/proposals/1/v${escape(entry.version.split('.')[1])}/">提案ページのURLで見る →</a>` : ''}
+      <h3>コメント</h3><p class="comment">${publicText(entry.comment || '未登録')}</p>${snapshot}${entry.snapshotUrl ? `<a class="proposal-link" href="${proposalUrl}">提案ページのURLで見る →</a>` : ''}
     </div></article>`;
   }).join('');
   return `<!doctype html>

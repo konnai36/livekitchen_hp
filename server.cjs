@@ -95,12 +95,12 @@ async function start(){
     res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache','X-Robots-Tag':'noindex, nofollow'});
     return res.end(req.method==='HEAD'?undefined:data);
    }
-   const proposalPath=url.match(/^\/proposals\/1\/v(\d+)(?:\/(.*))?$/);
+   const proposalPath=url.match(/^\/proposals\/1\/v(\d+(?:-\d+)?)(?:\/(.*))?$/);
    if(proposalPath){
-    const [,minor,resource]=proposalPath;
-    const version=`v0-${minor}`;
+    const [,alias,resource]=proposalPath;
+    const version=alias.includes('-')?`v${alias}`:`v0-${alias}`;
     if(!deliveries.some(entry=>entry.snapshotUrl===`/${version}/`)){res.writeHead(404);return res.end('Not found');}
-    if(resource===undefined){res.writeHead(308,{'Location':`/proposals/1/v${minor}/`});return res.end();}
+    if(resource===undefined){res.writeHead(308,{'Location':`/proposals/1/v${alias}/`});return res.end();}
     const relative=resource||'index.html';
     if(!/^(?:index\.html|style\.css|script\.js|assets\/[a-zA-Z0-9_-]+\.(?:jpg|png|webp|svg|css|js))$/.test(relative)){res.writeHead(404);return res.end('Not found');}
     let data;try{data=await fs.readFile(path.join(root,'snapshots',version,relative));}catch{res.writeHead(404);return res.end('Not found');}
