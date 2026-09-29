@@ -2,7 +2,7 @@
 
 公開サイト: https://livekitchen.tokyo/
 リファクタリング確認: https://livekitchen.tokyo/preview/
-一般向け料金ページ（プレビュー）: https://livekitchen.tokyo/preview/pricing/
+一般向け料金ページ: https://livekitchen.tokyo/pricing/
 案件管理: https://livekitchen.tokyo/cm/
 ローカル確認: http://10.100.10.10:8234
 
@@ -27,7 +27,7 @@ Node.js標準ライブラリ + HTML/CSS/JavaScript。新しいnpm依存はあり
 
 `refactor/livekitchen` ブランチは `/srv/livekitchen_hp_refactor` の別ワークツリーで管理します。`livekitchen-preview.service` が `127.0.0.1:8236` で起動し、公開サーバーが `/preview/` のみを中継します。プレビューの問い合わせは `/var/lib/livekitchen-preview/` に保存され、公開サイトの問い合わせとは分離されています。
 
-プレビューにはHTMLのrobots指定とHTTPの `X-Robots-Tag: noindex, nofollow` の両方を付けています。公開 `/` は承認後のデプロイまで従来版を維持します。
+プレビューにはHTMLのrobots指定とHTTPの `X-Robots-Tag: noindex, nofollow` の両方を付けています。2026/9/29に承認済みリファクタリング版を公開 `/` へ反映しました。
 
 - `phone`: 正式な番号を設定するとトップ、問い合わせ欄、スマホ固定欄が `tel:` リンクになります。番号そのものは画面に表示せず「電話をかける」と案内します。未設定時は「番号掲載準備中・フォームをご利用ください」と表示。
 - `contactEmail`: **livekitchen.co@gmail.com**。直接メールリンク、管理者向けフォーム通知、お客様向け自動返信の返信先。後から `site.config.cjs` で変更可能。
@@ -136,7 +136,7 @@ ZIPはその版のファイル一式、bundleはGitの変更履歴を含む引�
 
 ### 納品履歴ページと固定版
 
-- `/` は最新版。下部に最新納品版の番号・日本時間の日時・変更箇所・コメントを表示します。
+- `/` は最新版です。公開ページには版番号・納品日時・変更履歴・`/list/` 導線を表示しません。
 - `/list/` は全納品版の一覧。`delivery-history.json` で記録を管理します。変更後はWebサービスを再起動します。
 - `/v0-2/` はver.0.2の固定ページ。描画済みHTML・CSS・JavaScript・画像を `snapshots/v0-2/` に保存しています。公開設定もHTMLに展開済みなので、以降の設定変更で表示は変わりません。
 
@@ -144,21 +144,21 @@ ver.0.1はユーザー指定の2026/9/16 7:25と15項目を記録しています
 
 ver.0.2は2026/9/17の作業記録と現行ファイルを照合した26項目と、連絡ページ・連絡先カード・会社名修正の3項目（計29項目）の変更を記載しています。途中の試行と納品時の最終状態も区別しています。履歴の根拠と作業時刻は `DELIVERY-CHANGELOG.md` に記録しています。今回の履歴補完はver.0.2に含め、次回の新しい変更からver.0.3にします。納品版のフォームは現在の `/api/`、案件管理リンクは現在の `/cm/` を利用します。バックエンドの過去版を複製する仕組みではありません。
 
-次回納品の手順（例: ver.0.3）:
+次回納品の手順（例: ver.0.5）:
 
 1. `delivery-history.json` に `version`、ISO形式の `deliveredAt`、`changes`、`comment`、`snapshotUrl: null` を追加します。日時はタイムゾーンを含めて記録します。
 2. `sudo systemctl restart italian-school.service` で表示を更新します。
-3. `node scripts/create-delivery.cjs 0.3` で稼働サイトから固定版を作成します。既存の固定版は上書きできません。
-4. 再びWebサービスを再起動し、`/v0-3/` と `/list/` を確認します。
-5. 変更と固定版をGitにコミットし、`v0.3` タグを付けます。納品用ZIPと履歴bundleは、そのタグから作成します。
+3. `node scripts/create-delivery.cjs 0.5` で稼働サイトから固定版を作成します。既存の固定版は上書きできません。
+4. 再びWebサービスを再起動し、`/v0-5/` と `/list/` を確認します。
+5. 変更と固定版をGitにコミットし、`v0.5` タグを付けます。納品用ZIPと履歴bundleは、そのタグから作成します。
 
 履歴にコメントを表示する機能はありますが、ブラウザからコメントを投稿・編集する管理画面はありません。
 
 ### 制作・納品の連絡ページ（ver.0.2に統合）
 
-`/list/` は合同会社おかゆからの制作・納品の連絡ページです。最下部に担当 近内の連絡先カードを掲載し、メール・電話のリンクから連絡できます。旧ver.0.3・ver.0.4の変更をver.0.2へ統合しました。次回の新規変更はver.0.3です。
+`/list/` は合同会社おかゆからの制作・納品の連絡ページです。最下部に担当 近内の連絡先カードを掲載し、メール・電話のリンクから連絡できます。旧ver.0.3・ver.0.4の変更をver.0.2へ統合しました。次回の新規変更はver.0.5です。
 
-統合前の版は `archive/v0.3`、`archive/v0.4`、`v0.2-before-consolidation` のGitタグで保存しています。`v0.2` は統合後の納品版を指します。旧URLの `/v0-3/` と `/v0-4/` は、新しい同番号の納品版が登録されるまで `/v0-2/` へ一時転送します。
+統合前の版は `archive/v0.3`、`archive/v0.4`、`v0.2-before-consolidation` のGitタグで保存しています。`v0.2` は統合後の納品版を指します。正式な `/v0-3/` と `/v0-4/` はそれぞれ固定版として発行済みです。
 
 ### ver.0.3 料金案の掲載（2026/9/22）
 
@@ -171,3 +171,7 @@ ver.0.2は2026/9/17の作業記録と現行ファイルを照合した26項目�
 川上サイトと同じ運用として、`/proposals/` に提案一覧を追加しました。従来の `/list/` も同じ内容です。固定版は `/proposals/1/v3/` と `/v0-3/` で参照できます。将来のver.0.xも同様に `/proposals/1/vx/` を発行します。
 
 `/list/` または `/proposals/` のフォームでMP4・JPEG・PNG・GIF・WebP・AVIF・ZIPをアップロードできます。1ファイル30MBまで。アップロードキーは `/etc/livekitchen-upload.env` の `LIVEKITCHEN_UPLOAD_TOKEN` に保存し、Gitには含めません。確認はサーバー上で `sudo cat /etc/livekitchen-upload.env`。変更した場合は `sudo systemctl restart italian-school.service` で反映します。アップロード先は非公開の `/var/lib/italian-school/uploads/` で、サイトにはファイルのURLと一覧のみ公開されます。アップロードされた素材は運営者が確認してからサイトへ採用します。
+
+### ver.0.4 サイトリファクタリング（2026/9/29）
+
+承認済みの `/preview/` を公開 `/` へ反映しました。一般向け `/pricing/`、共通料金データ、SEO修正、モバイルUI整理、MASASHIと料理を主役にした構成を公開し、固定版 `/v0-4/` とGitタグ `v0.4` を発行しました。公開ページ最下部の納品メタデータと履歴導線は削除し、履歴は `/list/` で継続管理します。

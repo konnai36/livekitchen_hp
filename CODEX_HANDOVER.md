@@ -6,11 +6,11 @@
 
 ## 1. 現在の状態（最初に読むこと）
 
-- 公開中のTOP `https://livekitchen.tokyo/` は従来版のままです。
-- リファクタリング版はすでに別ブランチ・別ワークツリーで実装され、`https://livekitchen.tokyo/preview/` に配置されています。
-- リファクタリング版を公開 `/` へ反映する承認はまだありません。
-- 次の担当者は、ユーザーの明示的な公開指示があるまで、公開TOPをリファクタリング版へ切り替えてはいけません。
-- 固定納品版 `/v0-2/` と `/v0-3/` は変更してはいけません。
+- 公開中のTOP `https://livekitchen.tokyo/` は、2026/9/29に承認済みリファクタリング版へ切り替え済みです。
+- 同じデザインのレビュー環境を `https://livekitchen.tokyo/preview/` に維持しています。
+- ユーザーの明示的な承認により公開 `/` へ反映し、ver.0.4として納品済みです。
+- 今後の通常変更では版番号を上げず、ユーザーの明示的な指示がある場合だけ次版を発行します。
+- 固定納品版 `/v0-2/`、`/v0-3/`、`/v0-4/` は変更してはいけません。
 - 通常の修正では版番号を上げません。詳細は `AGENTS.md` を優先してください。
 - ユーザーの直近指示は「引き継ぎ文書を作ること」であり、この文書作成以外の新しいリファクタリング作業は開始しません。
 
@@ -40,7 +40,7 @@
 
 ### 納品タグ
 
-- 現在の正式な最新版タグ: `v0.3`
+- 現在の正式な最新版タグ: `v0.4`
 - 過去タグ: `v0.2`
 - 旧版保管タグ: `archive/v0.3`, `archive/v0.4`
 - その他の退避タグは `git tag --list` で確認してください。
@@ -108,15 +108,16 @@ systemctl status livekitchen-preview.service --no-pager
 
 | URL | 用途 | 状態・注意 |
 |---|---|---|
-| `https://livekitchen.tokyo/` | 公開TOP | 従来版。承認まで維持 |
+| `https://livekitchen.tokyo/` | 公開TOP | ver.0.4 リファクタリング版 |
 | `https://livekitchen.tokyo/preview/` | リファクタリングTOP | noindex。確認用 |
-| `https://livekitchen.tokyo/preview/pricing/` | 一般向け料金ページ案 | noindex。確認用 |
-| `https://livekitchen.tokyo/pricing/` | 将来の一般向け料金ページ | 公開デプロイ後に有効化予定 |
+| `https://livekitchen.tokyo/preview/pricing/` | 一般向け料金ページのレビュー環境 | noindex。確認用 |
+| `https://livekitchen.tokyo/pricing/` | 一般向け料金ページ | 公開中 |
 | `https://livekitchen.tokyo/pricing-owner-meeting/` | オーナーシェフとの料金整理資料 | 削除・一般公開ページ化しない。noindex |
 | `https://livekitchen.tokyo/list/` | 合同会社おかゆから顧客への通信・納品履歴 | 維持 |
 | `https://livekitchen.tokyo/proposals/` | 提案・アップロード関連 | 維持 |
 | `https://livekitchen.tokyo/v0-2/` | ver.0.2固定版 | 変更禁止 |
 | `https://livekitchen.tokyo/v0-3/` | ver.0.3固定版 | 変更禁止 |
+| `https://livekitchen.tokyo/v0-4/` | ver.0.4固定版 | 変更禁止 |
 | `https://livekitchen.tokyo/cm/` | マルチテナント案件管理システム | 既存連携を壊さない |
 
 `/preview/` はHTMLのrobots指定とHTTP `X-Robots-Tag: noindex, nofollow` の両方を設定済みです。
@@ -363,7 +364,7 @@ Cookieに一部入力を保存し、次回復元します。保存内容を削�
 - ギャラリーダイアログのキーボード、Esc、左右キー、フォーカス復帰
 - フォームのlabel、legend、aria-live
 
-公開 `/` はまだ従来版なので、SEO修正が正式に公開されるのは承認後のデプロイ時です。
+SEO修正はver.0.4として公開済みです。
 
 ## 11. CSS / JavaScriptの整理結果
 
@@ -429,13 +430,14 @@ node --test tests/*.test.cjs
 - 固定版は、その版の修正をユーザーが明示した場合だけ変更します。
 - 認証情報、問い合わせ、環境ファイルをGitへ入れません。
 
-リファクタリングを公開する通常手順は、ユーザーの公開承認後に別途行います。承認前にmainへmergeしないでください。
+リファクタリング版はmainへ統合済みです。次の公開変更も、プレビュー確認とユーザーの公開指示を経てmainへ反映してください。
 
 ## 14. 絶対に壊してはいけないもの
 
 - 現在の公開TOP `/`
 - `/v0-2/`
 - `/v0-3/`
+- `/v0-4/`
 - `/list/`
 - `/proposals/`
 - `/pricing-owner-meeting/`
@@ -471,7 +473,7 @@ node --test tests/*.test.cjs
 3. 毎回、公開 `/` が従来版のままか確認
 4. 360 / 390 / 768 / 1440pxを再確認
 5. 問い合わせの回帰テスト
-6. ユーザーが「本番デプロイして」等と明示した場合だけ公開反映
+6. 次の変更も、ユーザーが「本番デプロイして」等と明示した場合だけ公開反映
 7. 公開後に `/`, `/pricing/`, robots, sitemap,問い合わせを確認
 8. バージョン番号は別途明示指示がない限り上げない
 
@@ -499,7 +501,7 @@ node --test tests/*.test.cjs
 - canonical / OG確認
 - 問い合わせの独立テスト
 - 公開問い合わせデータにテストデータを残さない
-- 公開後のロールバック先として `5932dbb` または公開直前のmain commitを明確にする
+- ver.0.4公開直前のロールバックタグは `pre-release/v0.4`、正式納品タグは `v0.4`
 
 ## 18. 重要な注意事項
 
