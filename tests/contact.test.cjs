@@ -13,8 +13,9 @@ test('isolated backend: persistence, CSRF, spam, replay, errors and private file
   async function token(){const r=await fetch(base+'/api/contact-token');return {cookie:r.headers.get('set-cookie').split(';')[0],token:(await r.json()).token};}
   async function post(t,data={},headers={}){return fetch(base+'/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json',Origin:'http://localhost:8234',Cookie:t.cookie,'CF-Connecting-IP':`192.0.2.${++counter}`,...headers},body:JSON.stringify({...valid,...data,token:t.token})});}
   let home=await fetch(base+'/',{redirect:'manual'});assert.equal(home.status,200);
-  const latestDelivery=[...require('../delivery-history.json')].sort((a,b)=>Date.parse(b.deliveredAt)-Date.parse(a.deliveredAt))[0];
-  assert.ok((await home.text()).includes(`<strong>ver.${latestDelivery.version}</strong>`));
+  const homeHTML=await home.text();
+  assert.ok(!homeHTML.includes('class="delivery-note"'));
+  assert.ok(!homeHTML.includes('全バージョン・変更履歴を見る'));
   const history=await fetch(base+'/list/');assert.equal(history.status,200);
   const historyHTML=await history.text();assert.ok(historyHTML.includes('2026/9/16 07:25'));assert.ok(historyHTML.includes('href="/v0-2/"'));
   assert.ok(historyHTML.includes('href="/pricing-owner-meeting/"'));

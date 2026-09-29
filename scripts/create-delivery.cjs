@@ -11,6 +11,8 @@ async function main() {
   const entries = JSON.parse(await fs.readFile(ledgerPath, 'utf8'));
   const entry = entries.find(item => item.version === version);
   if (!entry) throw Error('Add delivery metadata and restart the server before capturing');
+  if (entry.snapshotUrl) throw Error('This delivery already has an immutable snapshot');
+  if (entries.at(-1) !== entry) throw Error('Only the newest delivery can be captured');
   const slug = `v${version.replaceAll('.', '-')}`;
   const destination = path.join(root, 'snapshots', slug);
   // mkdir without recursive refuses to overwrite an existing delivery.
@@ -24,7 +26,7 @@ async function main() {
     }
     if (!response.ok) throw Error('Cannot fetch running website');
     let html = await response.text();
-    if (html.includes('{{') || !html.includes(`<strong>ver.${version}</strong>`)) throw Error('Server does not have the new delivery metadata; restart it first');
+    if (html.includes('{{')) throw Error('The running website contains unresolved template data');
     html = html.replace('<head>', '<head><meta name="robots" content="noindex,nofollow">');
     await fs.writeFile(path.join(destination, 'index.html'), html);
     for (const file of ['style.css', 'script.js']) await fs.copyFile(path.join(root, file), path.join(destination, file));
