@@ -28,6 +28,9 @@ async function main() {
     let html = await response.text();
     if (html.includes('{{')) throw Error('The running website contains unresolved template data');
     html = html.replace('<head>', '<head><meta name="robots" content="noindex,nofollow">');
+    for (const resource of ['assets/', 'style.css', 'script.js']) {
+      html = html.replaceAll(`"/${resource}`, `"/${slug}/${resource}`);
+    }
     await fs.writeFile(path.join(destination, 'index.html'), html);
     for (const file of ['style.css', 'script.js']) await fs.copyFile(path.join(root, file), path.join(destination, file));
     await fs.cp(path.join(root, 'assets'), path.join(destination, 'assets'), {recursive: true});
