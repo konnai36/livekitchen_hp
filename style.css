@@ -108,6 +108,11 @@ h2 { font-size: clamp(2rem, 3.5vw, 3.45rem); line-height: 1.45; letter-spacing: 
 .selected-grid figure:hover img { transform: scale(1.015); }
 .selected-grid figcaption { position: absolute; right: 0; bottom: 0; left: 0; padding: 3rem 1.3rem 1rem; background: linear-gradient(transparent, rgba(0, 0, 0, 0.78)); color: #fff; font-family: var(--font-serif); font-size: clamp(1rem, 1.6vw, 1.35rem); letter-spacing: 0.04em; text-shadow: 0 1px 8px #000; }
 .selected-grid figcaption span { display: block; margin-bottom: 0.2rem; font-family: var(--font-sans); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; }
+.tamura-story { display: grid; grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.3fr); gap: 1.2rem clamp(2rem, 6vw, 6rem); max-width: 1040px; margin: clamp(2rem, 5vw, 4rem) auto 0; padding-left: clamp(1rem, 3vw, 2rem); border-left: 1px solid var(--color-accent); }
+.tamura-story .eyebrow { grid-column: 1; align-self: end; margin: 0; }
+.tamura-story h3 { grid-column: 1; grid-row: 2; font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 400; line-height: 1.6; }
+.tamura-story > div { grid-column: 2; grid-row: 1 / span 2; align-self: center; max-width: var(--content-reading); color: var(--color-muted); font-size: 12px; line-height: 2.1; }
+.tamura-story > div p + p { margin-top: 0.9rem; }
 
 .pricing-overview { border-top: 1px solid var(--color-line); }
 .price-overview-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.5rem, 3vw, 3.5rem); margin-bottom: 3rem; }
@@ -322,6 +327,10 @@ input[type="radio"], input[type="checkbox"] { width: 18px; height: 18px; accent-
   .selected-grid figure:not(.selected-main) { min-height: 48vw; }
   .selected-grid figcaption { padding: 2.5rem 0.7rem 0.65rem; font-size: 13px; }
   .selected-grid figcaption span { font-size: 8px; }
+  .tamura-story { grid-template-columns: 1fr; gap: 0.4rem; margin-top: 1.5rem; padding-left: 1rem; }
+  .tamura-story .eyebrow, .tamura-story h3, .tamura-story > div { grid-column: 1; grid-row: auto; }
+  .tamura-story h3 { font-size: 1.5rem; }
+  .tamura-story > div { margin-top: 0.65rem; font-size: 12px; }
   .price-overview-list { grid-template-columns: 1fr; gap: 2.5rem; }
   .price-summary .plan-summary { min-height: auto; }
   .feature-layout { grid-template-columns: 1fr; gap: 2.5rem; }
