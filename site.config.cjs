@@ -2,9 +2,6 @@
 module.exports = {
   origin: 'https://livekitchen.tokyo',
   origins: ['https://livekitchen.tokyo', 'https://kitchen.okayu-llc.jp'],
-  analytics: {
-    ga4MeasurementId: process.env.GA4_MEASUREMENT_ID?.trim() || ''
-  },
   // Per-site public/notification address. Prefer CONTACT_EMAIL in the service EnvironmentFile.
   contactEmail: process.env.CONTACT_EMAIL || 'livekitchen.co@gmail.com',
   phone: '080-9811-1888',

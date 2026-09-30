@@ -36,7 +36,7 @@ function proxyCaseManagement(req,res,url){
  req.pipe(upstream);
  return true;
 }
-function render(template,request={}){
+function render(template){
  const phone=config.phone.trim();
  const phoneIcon='<svg class="phone-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 2.8 9.4 7 7.8 9.1c1.2 2.5 3.2 4.5 5.7 5.7l2.1-1.6 4.2 2.8-1 4.4c-.2.8-.9 1.3-1.7 1.3C9 21.1 2.9 15 2.3 6.9c0-.8.5-1.5 1.3-1.7l3-2.4Z"/></svg>';
  const phoneCTA=phone && /^[+\d\s()-]+$/.test(phone) ? `<a class="phone-cta" href="tel:${escape(phone.replace(/[\s()-]/g,''))}" aria-label="電話で相談する"><span class="phone-label">電話で相談</span>${phoneIcon}</a>` : '<span class="phone-cta phone-unavailable" role="note">電話で相談<span>番号掲載準備中・フォームをご利用ください</span></span>';
@@ -48,19 +48,13 @@ function render(template,request={}){
  const faq=config.faq.map(([q,a])=>`<details><summary>${escape(q)}<span aria-hidden="true">＋</span></summary><p>${escape(a)}</p></details>`).join('');
  const examples=config.examples.length ? `<section class="request-examples section"><p class="eyebrow">CASE STUDIES</p><h2>実際のご依頼例</h2><div class="price-grid">${config.examples.map(e=>`<article class="plan-card"><h3>${escape(e.title)}</h3><p>${escape(e.people)}</p><p>${escape(e.scope)}</p><p class="plan-amount">${escape(e.total)}</p><p>${escape(e.note)}</p></article>`).join('')}</div></section>` : '';
  const header=`<header class="site-header"><a class="header-identity" href="${siteBase}/" aria-label="LiveKitchen トップ"><span class="site-logo cm-logo" aria-hidden="true">lk<span>·</span></span><span class="brand">LiveKitchen<span>Private Chef / Catering</span></span></a><nav id="navigation" class="site-nav" aria-label="メインナビゲーション"><a href="${siteBase}/#services">サービス内容</a><a href="${siteBase}/#selected-dishes">料理</a><a href="${siteBase}/#cuisine">料理・サービスの特徴</a><a href="${siteBase}/#ingredients">食材へのこだわり</a><a href="${siteBase}/#about">シェフ紹介</a><a href="${siteBase}/#pricing">料金・プラン</a><a href="${siteBase}/#works">料理・ケータリングの写真</a><a href="${siteBase}/#faq">よくあるご質問</a><a href="${siteBase}/#contact">ご相談・お問い合わせ</a></nav><a class="header-cta" href="${siteBase}/#contact">無料相談・お見積り</a><button class="menu menu-toggle" type="button" aria-controls="navigation" aria-expanded="false" aria-label="メニューを開く"><span class="menu-lines" aria-hidden="true"><span></span><span></span></span></button></header>`;
- const footer=`<footer class="site-footer"><div class="footer-main"><a class="brand" href="${siteBase}/">LiveKitchen<small>Private Chef / Catering</small></a><div class="footer-credits"><p>出張シェフ・ケータリングの実施・運営：ライブキッチン合同会社</p></div><div class="footer-links">${socialLinks}<a href="${siteBase}/pricing/">料金・プラン</a><a href="${siteBase}/privacy/">プライバシー・Cookie</a><a href="#top">PAGE TOP ↑</a></div></div><div class="footer-bottom"><span>Copyright 2026 ライブキッチン合同会社</span></div></footer>`;
- const requestedHost=(()=>{try{return new URL(`http://${request.host||''}`).hostname.toLowerCase();}catch{return '';}})();
- const measurementId=config.analytics?.ga4MeasurementId||'';
- const validMeasurementId=/^G-[A-Z0-9]{4,}$/i.test(measurementId);
- const analyticsEnabled=!siteBase&&requestedHost==='livekitchen.tokyo'&&['/','/pricing/'].includes(request.path)&&validMeasurementId;
- const consentUi=analyticsEnabled||siteBase==='/preview';
- const analyticsMeta=`<meta name="ga4-measurement-id" content="${analyticsEnabled?escape(measurementId):''}"><meta name="ga4-enabled" content="${analyticsEnabled?'true':'false'}"><meta name="analytics-consent-ui" content="${consentUi?'true':'false'}"><meta name="analytics-preview" content="${siteBase==='/preview'?'true':'false'}">`;
- return template.replace('{{ANALYTICS_META}}',analyticsMeta).replaceAll('{{BASE}}',siteBase).replaceAll('{{ROBOTS}}',siteBase?'noindex,nofollow':'index,follow').replaceAll('{{HEADER}}',header).replaceAll('{{FOOTER}}',footer).replaceAll('{{PHONE_CTA}}',phoneCTA).replaceAll('{{SOCIAL_LINKS}}',socialLinks).replace('{{EMAIL_CTA}}',`<a class="email-cta" href="mailto:${escape(config.contactEmail)}">メールで相談<span>${escape(config.contactEmail)}</span></a>`).replace('{{TOP_PRICE_CARDS}}',topPrices).replace('{{PRICING_CARDS}}',priceCards).replace('{{PRICING_OPTIONS}}',pricingOptions).replace('{{PRICING_FACTORS}}',pricingFactors).replace('{{FAQ_ITEMS}}',faq).replace('{{EXAMPLES}}',examples);
+ const footer=`<footer class="site-footer"><div class="footer-main"><a class="brand" href="${siteBase}/">LiveKitchen<small>Private Chef / Catering</small></a><div class="footer-credits"><p>出張シェフ・ケータリングの実施・運営：ライブキッチン合同会社</p></div><div class="footer-links">${socialLinks}<a href="${siteBase}/pricing/">料金・プラン</a><a href="#top">PAGE TOP ↑</a></div></div><div class="footer-bottom"><span>Copyright 2026 ライブキッチン合同会社</span></div></footer>`;
+ return template.replaceAll('{{BASE}}',siteBase).replaceAll('{{ROBOTS}}',siteBase?'noindex,nofollow':'index,follow').replaceAll('{{HEADER}}',header).replaceAll('{{FOOTER}}',footer).replaceAll('{{PHONE_CTA}}',phoneCTA).replaceAll('{{SOCIAL_LINKS}}',socialLinks).replace('{{EMAIL_CTA}}',`<a class="email-cta" href="mailto:${escape(config.contactEmail)}">メールで相談<span>${escape(config.contactEmail)}</span></a>`).replace('{{TOP_PRICE_CARDS}}',topPrices).replace('{{PRICING_CARDS}}',priceCards).replace('{{PRICING_OPTIONS}}',pricingOptions).replace('{{PRICING_FACTORS}}',pricingFactors).replace('{{FAQ_ITEMS}}',faq).replace('{{EXAMPLES}}',examples);
 }
 async function start(){
  const contact=await createContact({directory:process.env.CONTACT_STATE_DIR||'/var/lib/italian-school',origin:config.origin});
  const server=http.createServer(async(req,res)=>{
-  res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');res.setHeader('Content-Security-Policy',"default-src 'self'; img-src 'self' https://www.google-analytics.com; script-src 'self' https://www.googletagmanager.com; style-src 'self'; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
+  res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');res.setHeader('Content-Security-Policy',"default-src 'self'; img-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
   try{
    let url;try{url=decodeURIComponent(new URL(req.url,'http://localhost').pathname);}catch{res.writeHead(400);return res.end();}
    if(siteBase){
@@ -78,17 +72,12 @@ async function start(){
     res.writeHead(200,{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-cache'});return res.end(req.method==='HEAD'?undefined:body);
    }
    if(url==='/sitemap.xml'){
-    const body='<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://livekitchen.tokyo/</loc></url><url><loc>https://livekitchen.tokyo/pricing/</loc></url><url><loc>https://livekitchen.tokyo/privacy/</loc></url></urlset>\n';
+    const body='<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://livekitchen.tokyo/</loc></url><url><loc>https://livekitchen.tokyo/pricing/</loc></url></urlset>\n';
     res.writeHead(200,{'Content-Type':'application/xml; charset=utf-8','Cache-Control':'no-cache','X-Robots-Tag':siteBase?'noindex, nofollow':'all'});return res.end(req.method==='HEAD'?undefined:body);
    }
    if(url==='/pricing'||url==='/pricing/'){
     if(url==='/pricing'){res.writeHead(308,{'Location':siteBase+'/pricing/'});return res.end();}
-    const data=render(await fs.readFile(path.join(root,'pricing.html'),'utf8'),{host:req.headers.host,path:url});
-    res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache',...(siteBase?{'X-Robots-Tag':'noindex, nofollow'}:{})});return res.end(req.method==='HEAD'?undefined:data);
-   }
-   if(url==='/privacy'||url==='/privacy/'){
-    if(url==='/privacy'){res.writeHead(308,{'Location':siteBase+'/privacy/'});return res.end();}
-    const data=render(await fs.readFile(path.join(root,'privacy.html'),'utf8'),{host:req.headers.host,path:url});
+    const data=render(await fs.readFile(path.join(root,'pricing.html'),'utf8'));
     res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache',...(siteBase?{'X-Robots-Tag':'noindex, nofollow'}:{})});return res.end(req.method==='HEAD'?undefined:data);
    }
    if(url==='/proposals'||url==='/proposals/'){
@@ -138,7 +127,7 @@ async function start(){
    const relative=publicPath;
    if(!/^(?:index\.html|style\.css|script\.js|assets\/[a-zA-Z0-9_-]+\.(?:jpg|png|webp|svg|css|js))$/.test(relative)){res.writeHead(404);return res.end('Not found');}
    let data;try{data=await fs.readFile(path.join(root,relative));}catch{res.writeHead(404);return res.end('Not found');}
-   if(relative==='index.html')data=render(data.toString('utf8'),{host:req.headers.host,path:url});
+   if(relative==='index.html')data=render(data.toString('utf8'));
    const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.jpg':'image/jpeg','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml'};
    res.writeHead(200,{'Content-Type':types[path.extname(relative)],'Cache-Control':relative.startsWith('assets/')?'public, max-age=86400':'no-cache',...(siteBase?{'X-Robots-Tag':'noindex, nofollow'}:{})});res.end(req.method==='HEAD'?undefined:data);
   }catch(e){console.error('Request failed:',e.code||'unknown');if(!res.headersSent){res.writeHead(500);res.end('Server error');}else res.end();}
