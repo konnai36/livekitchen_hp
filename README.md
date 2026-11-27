@@ -1,3 +1,11 @@
+## GitHub Pages（静的公開）
+
+A版は `docs/` の静的ファイルから公開します。想定URLは `https://konnai36.github.io/livekitchen_hp/` です。GitHub Actionsが `main` の `docs/` またはPages Workflowの変更を検知してデプロイします。
+
+この公開版に問い合わせフォーム、Node.jsサーバー、問い合わせAPI、顧客データ保存は含めません。連絡導線はメール（`mailto:`）と電話（`tel:`）です。GitHub PagesはリポジトリがPrivateでもWebサイト自体は公開されます。PrivateリポジトリでPagesを利用するにはGitHub Pro等の対象プランが必要です。
+
+現在のA版を基準として保持し、次の修正はB版として別URLに用意します。B版ができたら、ユーザーをA/Bへ割り振る入口と、実験専用の計測方法を追加します。
+
 # Livekitchen — 出張シェフ・ケータリング
 
 公開サイト: https://livekitchen.tokyo/
