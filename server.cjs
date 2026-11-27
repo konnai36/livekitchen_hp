@@ -68,7 +68,14 @@ async function start(){
     if(!url.startsWith(siteBase+'/')){res.writeHead(404);return res.end('Not found');}
     url=url.slice(siteBase.length)||'/';
     req.siteBase=siteBase;
-   }else if(proxyPreview(req,res,url))return;
+   }else{
+    if(process.env.LIVEKITCHEN_MAINTENANCE==='true'){
+     const body='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>メンテナンス中｜LiveKitchen</title><body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#f6f7f3;color:#253b35;font-family:system-ui,sans-serif;text-align:center"><main style="padding:32px"><p style="letter-spacing:.16em;font-size:.75rem">LIVEKITCHEN</p><h1 style="font-size:1.5rem;font-weight:500">ただいまメンテナンス中です</h1><p>ご不便をおかけしております。しばらくしてから再度ご覧ください。</p></main></body></html>';
+     res.writeHead(503,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','Retry-After':'3600'});
+     return res.end(req.method==='HEAD'?undefined:body);
+    }
+    if(proxyPreview(req,res,url))return;
+   }
    if(proxyCaseManagement(req,res,url))return;
    if(await handleUpload(req,res,url)!==false)return;
    if(await contact(req,res,url))return;
